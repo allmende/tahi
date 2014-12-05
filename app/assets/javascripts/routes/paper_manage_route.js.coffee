@@ -37,6 +37,15 @@ ETahi.PaperManageRoute = ETahi.AuthorizedRoute.extend
       return unless taskType
       unNamespacedKind = Tahi.utils.deNamespaceTaskType taskType.get('kind')
 
+      @store.createRecord(unNamespacedKind,
+        phase: phase
+        role: taskType.get 'role'
+        type: taskType.get 'kind'
+        paper: @modelFor 'paper'
+        title: taskType.get 'title'
+      ).save().then (newTask) =>
+        @send 'viewCard', newTask, {queryParams: {isNewTask: true}}
+
     showDeleteConfirm: (task) ->
       @controllerFor('cardDeleteOverlay').set('task', task)
       @render('cardDeleteOverlay',
@@ -51,12 +60,3 @@ ETahi.PaperManageRoute = ETahi.AuthorizedRoute.extend
         type: 'Task'
         paper: paper
         title: 'New Ad-Hoc Card'
-
-      @store.createRecord(unNamespacedKind,
-        phase: phase
-        role: taskType.get 'role'
-        type: taskType.get 'kind'
-        paper: @modelFor 'paper'
-        title: taskType.get 'title'
-      ).save().then (newTask) =>
-        @send 'viewCard', newTask, {queryParams: {isNewTask: true}}
